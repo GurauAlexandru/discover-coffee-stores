@@ -11,12 +11,12 @@ export async function getStaticProps(staticProps) {
   const coffeeStores = await fetchCoffeeStores();
 
   const params = staticProps.params;
-
+  const findCoffeeStoresById = coffeeStores.find(
+    (coffeStore) => coffeStore.id.toString() === params.id
+  );
   return {
     props: {
-      coffeeStore: coffeeStores.find(
-        (coffeStore) => coffeStore.id.toString() === params.id
-      ),
+      coffeeStore: findCoffeeStoresById || {},
     },
   };
 }
