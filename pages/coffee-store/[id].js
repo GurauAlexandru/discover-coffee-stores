@@ -1,11 +1,14 @@
 import Link from 'next/link';
+import { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import cls from 'classnames';
+import { isEmpty } from '../../utils/index.js';
 
 import { fetchCoffeeStores } from '../../lib/coffee-stores';
 import Head from 'next/head';
 import styles from '../../styles/coffee-store.module.css';
 import Image from 'next/image';
+import { StoreContext } from '../../store/store-context.js';
 
 export async function getStaticProps(staticProps) {
   const coffeeStores = await fetchCoffeeStores();
@@ -33,16 +36,35 @@ export async function getStaticPaths() {
   };
 }
 
-const CoffeeStore = (props) => {
+const CoffeeStore = (initialProps) => {
   const router = useRouter();
+
+  const id = router.query.id;
+
+  const [coffeeStore, setCoffeeStore] = useState(initialProps.coffeeStore);
+
+  const {
+    state: { coffeeStores },
+  } = useContext(StoreContext);
+
+  useEffect(() => {
+    if (isEmpty(initialProps.coffeeStore)) {
+      if (coffeeStores.length > 0) {
+        const findCoffeeStoreById = coffeeStores.find((coffeeStore) => {
+          return coffeeStore.id.toString() === id; //dynamic id
+        });
+        setCoffeeStore(findCoffeeStoreById);
+      }
+    }
+  }, [id]);
+
+  const { name, address, region, imgUrl } = coffeeStore;
+
+  const handleUpVoteButton = () => {};
 
   if (router.isFallback) {
     return <div>Loading...</div>;
   }
-
-  const { address, region, name, imgUrl } = props.coffeeStore;
-
-  const functionUpvoteButton = () => console.log('Upvoted!');
 
   return (
     <div className={styles.layout}>
@@ -62,7 +84,7 @@ const CoffeeStore = (props) => {
               imgUrl ||
               'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80'
             }
-            alt={name}
+            alt={name || 'Coffee store'}
             width={600}
             height={360}
             className={styles.storeImg}
@@ -101,9 +123,7 @@ const CoffeeStore = (props) => {
             <p className={styles.text}>1</p>
           </div>
 
-          <button
-            className={styles.upvoteButton}
-            onClick={functionUpvoteButton}>
+          <button className={styles.upvoteButton} onClick={handleUpVoteButton}>
             Upvote!
           </button>
         </div>
