@@ -56,6 +56,7 @@ export default function Home(props) {
     console.log({ latLong, locationErrorMsg });
   };
 
+  console.log(coffeeStores);
   return (
     <div className={styles.container}>
       <Head>
@@ -98,7 +99,7 @@ export default function Home(props) {
               </div>
             </div>
           )}
-          {!coffeeStores && props.coffeeStores.length > 0 && (
+          {!coffeeStores.length && props.coffeeStores.length > 0 && (
             <div className={styles.sectionWrapper}>
               <h2 className={styles.heading2}>Toronto stores</h2>
               <div className={styles.cardLayout}>
