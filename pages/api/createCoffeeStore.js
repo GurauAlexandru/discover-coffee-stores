@@ -11,10 +11,12 @@ const createCoffeeStore = async (req, res) => {
   if (req.method === 'POST') {
     // find a record
 
+    const { name, address, region, voting, id, imgUrl } = req.body;
+
     try {
       const findCoffeeStoreRecords = await table
         .select({
-          filterByFormula: `id=0`,
+          filterByFormula: `id=${id}`,
         })
         .firstPage();
 
@@ -30,7 +32,25 @@ const createCoffeeStore = async (req, res) => {
         res.json(records);
       } else {
         // creating a record
-        res.json({ message: 'Creating a record' });
+        const createRecords = await table.create([
+          {
+            fields: {
+              name,
+              address,
+              region,
+              voting,
+              id,
+              imgUrl,
+            },
+          },
+        ]);
+
+        const records = createRecords.map((record) => {
+          return {
+            ...record.fields,
+          };
+        });
+        res.json(records);
       }
     } catch (error) {
       console.error(error);
