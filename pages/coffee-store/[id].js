@@ -14,12 +14,12 @@ export async function getStaticProps(staticProps) {
   const coffeeStores = await fetchCoffeeStores();
 
   const params = staticProps.params;
-  const findCoffeeStoresById = coffeeStores.find(
+  const coffeeStoreFromContext = coffeeStores.find(
     (coffeStore) => coffeStore.id.toString() === params.id
   );
   return {
     props: {
-      coffeeStore: findCoffeeStoresById || {},
+      coffeeStore: coffeeStoreFromContext || {},
     },
   };
 }
@@ -47,16 +47,50 @@ const CoffeeStore = (initialProps) => {
     state: { coffeeStores },
   } = useContext(StoreContext);
 
+  const handleCreateCoffeeStore = async (coffeeStore) => {
+    try {
+      const { id, name, voting, address, region, imgUrl } = coffeeStore;
+
+      const response = await fetch('/api/createCoffeeStore', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id,
+          name,
+          voting: voting || 0,
+          address: address || '',
+          region: region || '',
+          imgUrl,
+        }),
+      });
+
+      const dbCoffeeStore = await response.json();
+
+      console.log('dbCoffeeStore', { dbCoffeeStore });
+    } catch (error) {
+      console.error(`Error creating a coffee store: ${error}`);
+    }
+  };
+
   useEffect(() => {
     if (isEmpty(initialProps.coffeeStore)) {
       if (coffeeStores.length > 0) {
-        const findCoffeeStoreById = coffeeStores.find((coffeeStore) => {
+        const coffeeStoreFromContext = coffeeStores.find((coffeeStore) => {
           return coffeeStore.id.toString() === id; //dynamic id
         });
-        setCoffeeStore(findCoffeeStoreById);
+        if (coffeeStoreFromContext) {
+          setCoffeeStore(coffeeStoreFromContext);
+          handleCreateCoffeeStore(coffeeStoreFromContext);
+        }
       }
+    } else {
+      //SSG
+      setCoffeeStore(initialProps.coffeeStore);
+      handleCreateCoffeeStore(initialProps.coffeeStore);
     }
-  }, [id]);
+  }, [id, initialProps.coffeeStore, initialProps, coffeeStores]);
 
   const { name, address, region, imgUrl } = coffeeStore;
 
