@@ -94,7 +94,12 @@ const CoffeeStore = (initialProps) => {
 
   const { name, address, region, imgUrl } = coffeeStore;
 
-  const handleUpVoteButton = () => {};
+  const [votingCount, setVotingCount] = useState(0);
+
+  const handleUpVoteButton = () => {
+    let count = votingCount + 1;
+    setVotingCount(count);
+  };
 
   if (router.isFallback) {
     return <div>Loading...</div>;
@@ -154,7 +159,7 @@ const CoffeeStore = (initialProps) => {
               width='24'
               height='24'
             />
-            <p className={styles.text}>1</p>
+            <p className={styles.text}>{votingCount}</p>
           </div>
 
           <button className={styles.upvoteButton} onClick={handleUpVoteButton}>
