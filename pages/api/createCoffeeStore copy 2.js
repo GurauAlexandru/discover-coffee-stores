@@ -5,8 +5,6 @@ const base = new Airtable({ apiKey: process.env.AIRTALBE_API_KEY }).base(
 
 const table = base('coffee-stores');
 
-console.log({ table });
-
 const createCoffeeStore = async (req, res) => {
   if (req.method === 'POST') {
     // find a record
@@ -21,8 +19,6 @@ const createCoffeeStore = async (req, res) => {
           filterByFormula: `id=${id}`,
         })
         .firstPage();
-
-      console.log({ findCoffeeStoreRecords });
 
       if (findCoffeeStoreRecords.length > 0) {
         const records = findCoffeeStoreRecords.map((record) => {
