@@ -42,7 +42,6 @@ export default function Home(props) {
 
           setCoffeeStoresError('');
         } catch (error) {
-          console.error(error);
           setCoffeeStoresError(error.message);
         }
       }
@@ -53,10 +52,8 @@ export default function Home(props) {
 
   const handleOnBannerBtnClick = () => {
     handleTrackLocation();
-    console.log({ latLong, locationErrorMsg });
   };
 
-  console.log(coffeeStores);
   return (
     <div className={styles.container}>
       <Head>
